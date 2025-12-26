@@ -1,6 +1,9 @@
 module PokerHands
   ( PokerHand(..)
   , getPokerHandAndCards
+  , getScore
+  , getInitialPokerHandChipsMult
+  , getUpgradedPokerHandChipsMult
   ) where
 import Cards
 import Data.List (sort,find)
@@ -81,3 +84,30 @@ getFuncOfHand HighCard xs = getHigh xs
 
 getPokerHandAndCards :: [Card] -> (PokerHand, [Card])
 getPokerHandAndCards xs = fromJust (find (not . null . snd) (map (\x -> (x,getFuncOfHand x xs)) [minBound..maxBound]))
+
+data ChipsMult = ChipsMult Integer Integer
+
+getScore :: ChipsMult -> Integer
+getScore (ChipsMult chips mult) = chips * mult
+
+getInitialPokerHandChipsMult :: PokerHand -> ChipsMult
+getInitialPokerHandChipsMult StraightFlush = ChipsMult 100 8
+getInitialPokerHandChipsMult FourOfAKind = ChipsMult 60 7
+getInitialPokerHandChipsMult FullHouse = ChipsMult 40 4
+getInitialPokerHandChipsMult Flush = ChipsMult 35 4
+getInitialPokerHandChipsMult Straight = ChipsMult 30 4
+getInitialPokerHandChipsMult ThreeOfAKind = ChipsMult 30 3
+getInitialPokerHandChipsMult TwoPair = ChipsMult 20 2
+getInitialPokerHandChipsMult Pair = ChipsMult 10 2
+getInitialPokerHandChipsMult HighCard = ChipsMult 5 1
+
+getUpgradedPokerHandChipsMult :: PokerHand -> ChipsMult -> ChipsMult
+getUpgradedPokerHandChipsMult StraightFlush (ChipsMult c m) = ChipsMult (c+40) (m+4)
+getUpgradedPokerHandChipsMult FourOfAKind (ChipsMult c m) = ChipsMult (c+30) (m+3)
+getUpgradedPokerHandChipsMult FullHouse (ChipsMult c m) = ChipsMult (c+25) (m+2)
+getUpgradedPokerHandChipsMult Flush (ChipsMult c m) = ChipsMult (c+15) (m+2)
+getUpgradedPokerHandChipsMult Straight (ChipsMult c m) = ChipsMult (c+30) (m+3)
+getUpgradedPokerHandChipsMult ThreeOfAKind (ChipsMult c m) = ChipsMult (c+20) (m+2)
+getUpgradedPokerHandChipsMult TwoPair (ChipsMult c m) = ChipsMult (c+20) (m+1)
+getUpgradedPokerHandChipsMult Pair (ChipsMult c m) = ChipsMult (c+15) (m+1)
+getUpgradedPokerHandChipsMult HighCard (ChipsMult c m) = ChipsMult (c+10) (m+1)
