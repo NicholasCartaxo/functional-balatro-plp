@@ -1,6 +1,6 @@
 module PokerHands
   ( PokerHand(..)
-
+  , getPokerHandAndCards
   ) where
 import Cards
 import Data.List (sort,find)
@@ -17,8 +17,8 @@ getStraight xs
     straightLoop [] = True
     straightLoop [_] = True
     straightLoop [Card R5 _, Card RA _] = True
-    straightLoop (Card x _:Card y __:xs) =
-      (y == succ x) && straightLoop (Card y __:xs)
+    straightLoop (Card x _:Card y __:l) =
+      (y == succ x) && straightLoop (Card y __:l)
 
 getFlush :: [Card] -> [Card]
 getFlush xs
@@ -27,8 +27,8 @@ getFlush xs
   where
     flushLoop [] = True
     flushLoop [_] = True
-    flushLoop (Card _ x:Card __ y:xs) =
-      (x == y) && flushLoop (Card __ y:xs)
+    flushLoop (Card _ x:Card __ y:l) =
+      (x == y) && flushLoop (Card __ y:l)
 
 countOccurrences :: [Card] -> [(Rank,Int)]
 countOccurrences xs = [(i,j) | i <- [minBound..maxBound], j <- [length (filter (\(Card x _)-> x==i) xs)], j /= 0]
