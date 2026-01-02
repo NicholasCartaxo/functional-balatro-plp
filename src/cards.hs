@@ -38,3 +38,19 @@ instance Show Suit where
 
 data Card = Card Rank Suit
   deriving (Eq, Show, Ord)
+
+deck :: Card[]
+deck = [Card RA Spade, Card RA Heart, Card RA Diamond, Card RA Club,
+        Card R2 Spade, Card R2 Heart, Card R2 Diamond, Card R2 Club,
+        Card R3 Spade, Card R3 Heart, Card R3 Diamond, Card R3 Club,
+        Card R4 Spade, Card R4 Heart, Card R4 Diamond, Card R4 Club,
+        Card R5 Spade, Card R5 Heart, Card R5 Diamond, Card R5 Club,
+        Card R6 Spade, Card R6 Heart, Card R6 Diamond, Card R6 Club,
+        Card R7 Spade, Card R7 Heart, Card R7 Diamond, Card R7 Club,
+        Card R8 Spade, Card R8 Heart, Card R8 Diamond, Card R8 Club,
+        Card R9 Spade, Card R9 Heart, Card R9 Diamond, Card R9 Club,
+        Card R10 Spade, Card R10 Heart, Card R10 Diamond, Card R10 Club,
+        Card RJ Spade, Card RJ Heart, Card RJ Diamond, Card RJ Club,
+        Card RQ Spade, Card RQ Heart, Card RQ Diamond, Card RQ Club,
+        Card RK Spade, Card RK Heart, Card RK Diamond, Card RK Club
+        ]
