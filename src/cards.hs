@@ -13,7 +13,7 @@ instance Show Rank where
   show R6  = "6"; show R7  = "7"; show R8  = "8"; show R9  = "9";
   show R10 = "10"; show RJ  = "J"; show RQ  = "Q"; show RK  = "K";
 
-rankValue :: Rank -> Int
+rankValue :: Rank -> Integer
 rankValue R2  = 2
 rankValue R3  = 3
 rankValue R4  = 4
@@ -39,7 +39,7 @@ instance Show Suit where
 data Card = Card Rank Suit
   deriving (Eq, Show, Ord)
 
-deck :: Card[]
+deck :: [Card]
 deck = [Card RA Spade, Card RA Heart, Card RA Diamond, Card RA Club,
         Card R2 Spade, Card R2 Heart, Card R2 Diamond, Card R2 Club,
         Card R3 Spade, Card R3 Heart, Card R3 Diamond, Card R3 Club,

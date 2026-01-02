@@ -111,3 +111,9 @@ getUpgradedPokerHandChipsMult ThreeOfAKind (ChipsMult c m) = ChipsMult (c+20) (m
 getUpgradedPokerHandChipsMult TwoPair (ChipsMult c m) = ChipsMult (c+20) (m+1)
 getUpgradedPokerHandChipsMult Pair (ChipsMult c m) = ChipsMult (c+15) (m+1)
 getUpgradedPokerHandChipsMult HighCard (ChipsMult c m) = ChipsMult (c+10) (m+1)
+
+getChipsMultOfHand :: (PokerHand -> ChipsMult) -> [Card] -> ChipsMult
+getChipsMultOfHand getPokerHandChipsMult hand = ChipsMult (pokerHandChips + (sum (map (\(Card x _)-> rankValue x) scoredHand))) pokerHandMult
+  where
+    (pokerHand, scoredHand) = getPokerHandAndCards hand
+    (ChipsMult pokerHandChips pokerHandMult) = getPokerHandChipsMult pokerHand
