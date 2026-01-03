@@ -4,6 +4,7 @@ module PokerHands
   , getScore
   , getInitialPokerHandChipsMult
   , getUpgradedPokerHandChipsMult
+  , getChipsMultOfHand
   ) where
 import Cards
 import Data.List (sort,find)
