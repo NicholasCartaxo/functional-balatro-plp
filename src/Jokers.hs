@@ -22,22 +22,22 @@ numOfRank :: Rank -> [Card] -> Integer
 numOfRank rank xs = toInteger (length [r | (Card r _) <- xs, r == rank])
 
 hasRank :: Rank -> [Card] -> Bool
-hasRank rank xs = any (\(Card r _) -> r == rank) xs
+hasRank rank = any (\(Card r _) -> r == rank)
 
 multClubs :: Joker
 multClubs = Joker func
   where
-    func (ChipsMult c m) (_, hand) = ChipsMult c (m + 5*(numOfSuit Club hand))
+    func (ChipsMult c m) (_, hand) = ChipsMult c (m + 5*numOfSuit Club hand)
 
 multHearts :: Joker
 multHearts = Joker func
   where
-    func (ChipsMult c m) (_, hand) = ChipsMult c (m + 5*(numOfSuit Heart hand))
+    func (ChipsMult c m) (_, hand) = ChipsMult c (m + 5*numOfSuit Heart hand)
 
 redSquid :: Joker
 redSquid = Joker func
   where
-    func (ChipsMult c m) (_, hand) = ChipsMult c (m + 13*(numOfRank R9 hand))
+    func (ChipsMult c m) (_, hand) = ChipsMult c (m + 13*numOfRank R9 hand)
 
 twoDucks :: Joker
 twoDucks = Joker func
@@ -57,19 +57,19 @@ sixtyNine :: Joker
 sixtyNine = Joker func
   where
     func (ChipsMult c m) (_, hand)
-      |(hasRank R6 hand) && (hasRank R9 hand) = ChipsMult (c+69) m
+      |hasRank R6 hand && hasRank R9 hand = ChipsMult (c+69) m
       |otherwise = ChipsMult c m
 
 fiftyOne :: Joker
 fiftyOne = Joker func
   where
     func (ChipsMult c m) (_, hand)
-      |(hasRank R5 hand) && (hasRank RA hand) = ChipsMult (c+51) m
+      |hasRank R5 hand && hasRank RA hand = ChipsMult (c+51) m
       |otherwise = ChipsMult c m
 
 theBite :: Joker
 theBite = Joker func
   where
     func (ChipsMult c m) (_, hand)
-      |(hasRank R8 hand) && (hasRank R3 hand) = ChipsMult (c+83) m
+      |hasRank R8 hand && hasRank R3 hand = ChipsMult (c+83) m
       |otherwise = ChipsMult c m
