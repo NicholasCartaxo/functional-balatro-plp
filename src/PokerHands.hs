@@ -12,7 +12,18 @@ import Data.List (sort,find)
 import Data.Maybe (isJust,fromJust)
 
 data PokerHand = StraightFlush | FourOfAKind | FullHouse | Flush | Straight | ThreeOfAKind | TwoPair | Pair | HighCard
-  deriving (Eq, Show, Ord, Enum, Bounded)
+  deriving (Eq, Ord, Enum, Bounded)
+
+instance Show PokerHand where
+  show StraightFlush = "Straight Flush"
+  show FourOfAKind = "Quadra"
+  show FullHouse = "Full House"
+  show Flush = "Flush"
+  show Straight = "Sequência"
+  show ThreeOfAKind = "Trinca"
+  show TwoPair = "Dois Pares"
+  show Pair = "Par"
+  show HighCard = "Carta Alta"
 
 getStraight :: [Card] -> [Card]
 getStraight xs
