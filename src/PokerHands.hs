@@ -1,6 +1,7 @@
 module PokerHands
   ( PokerHand(..)
   , getPokerHandAndCards
+  , ChipsMult(..)
   , getScore
   , getInitialPokerHandChipsMult
   , getUpgradedPokerHandChipsMult
@@ -114,7 +115,7 @@ getUpgradedPokerHandChipsMult Pair (ChipsMult c m) = ChipsMult (c+15) (m+1)
 getUpgradedPokerHandChipsMult HighCard (ChipsMult c m) = ChipsMult (c+10) (m+1)
 
 getChipsMultOfHand :: (PokerHand -> ChipsMult) -> [Card] -> ChipsMult
-getChipsMultOfHand getPokerHandChipsMult hand = ChipsMult (pokerHandChips + (sum (map (\(Card x _)-> rankValue x) scoredHand))) pokerHandMult
+getChipsMultOfHand getPokerHandChipsMult hand = ChipsMult (pokerHandChips + sum (map (\(Card x _)-> rankValue x) scoredHand)) pokerHandMult
   where
     (pokerHand, scoredHand) = getPokerHandAndCards hand
     (ChipsMult pokerHandChips pokerHandMult) = getPokerHandChipsMult pokerHand
