@@ -38,7 +38,9 @@ instance Show Suit where
   show Club    = "\x2663"
 
 data Card = Card Rank Suit
-  deriving (Eq, Show, Ord)
+  deriving (Eq, Ord)
+instance Show Card where
+  show (Card r s) = show r ++ show s
 
 deck :: [Card]
 deck = [Card RA Spade, Card RA Heart, Card RA Diamond, Card RA Club,
