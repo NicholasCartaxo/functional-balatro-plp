@@ -1,5 +1,5 @@
 module GameLoop
-  ( RoundGameState(..) 
+  ( RoundGameState(..)
   , initialRoundGameState
   , updateRoundGameState
   ) where
@@ -17,7 +17,7 @@ data RoundGameState = RoundGameState
   , score :: Integer
   , targetScore :: Integer
   , jokers :: [Joker]
-  , pokerHandChipsMult :: (PokerHand -> ChipsMult)
+  , pokerHandChipsMult :: PokerHand -> ChipsMult
   }
 
 instance Show RoundGameState where
@@ -27,7 +27,7 @@ initialRoundGameState :: RoundGameState
 initialRoundGameState = RoundGameState
   { hands = 4
   , discards = 3
-  , hand = [(card, False) | card <- take 8 fullDeck]
+  , hand = sortByRank [(card, False) | card <- take 8 fullDeck]
   , deck = drop 8 fullDeck
   , score = 0
   , targetScore = 300
@@ -45,12 +45,23 @@ initialRoundGameState = RoundGameState
 isValidDigit :: Char -> Bool
 isValidDigit c = c >= '1' && c <= '8'
 
-changeSelectedCard :: Int -> [(Card,Bool)] -> [(Card,Bool)]
-changeSelectedCard i xs = left ++ ((card, not selected) : ys)
-  where (left, (card, selected):ys) = splitAt (i-1) xs
+toggleAtPos :: Int -> [(Card,Bool)] -> [(Card,Bool)]
+toggleAtPos i xs =
+  case right of
+    [] -> xs
+    ((card, selected):ys) ->
+      if selected || length selectedHand < 5 
+      then left ++ ((card, not selected) : ys)
+      else xs
+  where
+    (selectedHand, _) = separateSelected xs
+    (left, right) = splitAt (i-1) xs
 
 separateSelected :: [(Card,Bool)] -> ([Card],[(Card,Bool)])
 separateSelected xs = ([card | (card, selected) <- xs, selected], [(card,selected) | (card, selected) <- xs, not selected])
+
+drawNCards :: Int -> [(Card,Bool)] -> [Card] -> ([(Card,Bool)], [Card])
+drawNCards n remainingHand currentDeck = (sortByRank (remainingHand ++ [(card,False) | card <- take n currentDeck]), drop n currentDeck)
 
 sortBySuit :: [(Card,Bool)] -> [(Card,Bool)]
 sortBySuit = sortOn (\(Card _ suit, _) -> suit)
@@ -59,8 +70,24 @@ sortByRank :: [(Card,Bool)] -> [(Card,Bool)]
 sortByRank = sortOn (\(Card rank _, _) -> rank)
 
 updateRoundGameState :: Char -> RoundGameState -> RoundGameState
-updateRoundGameState action gameState
-  |isValidDigit action = gameState {hand = changeSelectedCard (digitToInt action) (hand gameState)}
-  |action == 'e' = gameState {hand = sortBySuit (hand gameState)}
-  |action == 'r' = gameState {hand = sortByRank (hand gameState)}
-  |otherwise = gameState
+updateRoundGameState action state
+  |isValidDigit action = state {hand = toggleAtPos (digitToInt action) (hand state)}
+  |action == 'q' && not (null selectedHand) = state
+    { hands = hands state - 1
+    , hand = nextHand
+    , deck = nextDeck
+    , score = score state + getScore handChipsMult
+    }
+  |action == 'w' && not (null selectedHand) = state
+    { discards = discards state - 1
+    , hand = nextHand
+    , deck = nextDeck
+    }
+  |action == 'e' = state {hand = sortBySuit (hand state)}
+  |action == 'r' = state {hand = sortByRank (hand state)}
+  |otherwise = state
+  where
+    (selectedHand, remainingHand) = separateSelected (hand state)
+    (nextHand, nextDeck) = drawNCards (length selectedHand) remainingHand (deck state)
+    pokerHandAndScored = getPokerHandAndCards selectedHand
+    handChipsMult = foldl (\chipsMult (Joker _ func) -> func chipsMult pokerHandAndScored) (getChipsMultOfHand (pokerHandChipsMult state) selectedHand) (jokers state)
