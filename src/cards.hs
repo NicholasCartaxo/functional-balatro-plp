@@ -3,7 +3,7 @@ module Cards
   , rankValue
   , Suit(..)
   , Card(..)
-  , deck
+  , fullDeck
   ) where
 
 data Rank = R2 | R3 | R4 | R5 | R6 | R7 | R8 | R9 | R10 | RJ | RQ | RK | RA
@@ -42,8 +42,8 @@ data Card = Card Rank Suit
 instance Show Card where
   show (Card r s) = show r ++ show s
 
-deck :: [Card]
-deck = [Card RA Spade, Card RA Heart, Card RA Diamond, Card RA Club,
+fullDeck :: [Card]
+fullDeck = [Card RA Spade, Card RA Heart, Card RA Diamond, Card RA Club,
         Card R2 Spade, Card R2 Heart, Card R2 Diamond, Card R2 Club,
         Card R3 Spade, Card R3 Heart, Card R3 Diamond, Card R3 Club,
         Card R4 Spade, Card R4 Heart, Card R4 Diamond, Card R4 Club,

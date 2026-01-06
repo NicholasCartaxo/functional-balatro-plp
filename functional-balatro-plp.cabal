@@ -29,6 +29,7 @@ library
       PokerHands
       Cards
   other-modules:
+      GameLoop
       Jokers
       Paths_functional_balatro_plp
   autogen-modules:
