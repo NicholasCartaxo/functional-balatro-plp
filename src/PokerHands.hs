@@ -99,6 +99,8 @@ getPokerHandAndCards :: [Card] -> (PokerHand, [Card])
 getPokerHandAndCards xs = fromJust (find (not . null . snd) (map (\x -> (x,getFuncOfHand x xs)) [minBound..maxBound]))
 
 data ChipsMult = ChipsMult Integer Integer
+instance Show ChipsMult where
+  show (ChipsMult c m) = (show c) ++ " x " ++ (show m)
 
 getScore :: ChipsMult -> Integer
 getScore (ChipsMult chips mult) = chips * mult
