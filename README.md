@@ -11,7 +11,7 @@ Depois de compilar, acessem o diretório app e executem no terminal:
 
 Ainda não vi como alterar o encoding do projeto ainda, então, por hora, deixei os imports necessários dentro do arquivo Main e a dica de cima para rodarem com tranquilidade.
 
-! Pesquisei também sobre apagar os arquivos de objeto (.o) e os de interface compilada (.hi) que surgem após "ghc -isrc app/Main.hs", e vi que com eles no diretório recompila mais rápido depois de um tempo de uso, o que me ajudou a ir mais rápido do desenvolvimento, por isso não apaguei. Se quiserem apagar todos eles de uma vez, pelo menos no Windows PowerShell pode-se usar:
+[!NOTE] Pesquisei também sobre apagar os arquivos de objeto (.o) e os de interface compilada (.hi) que surgem após "ghc -isrc app/Main.hs", e vi que com eles no diretório recompila mais rápido depois de um tempo de uso, o que me ajudou a ir mais rápido do desenvolvimento, por isso não apaguei. Se quiserem apagar todos eles de uma vez, pelo menos no Windows PowerShell pode-se usar:
 > *.o
 > *.hi
 
