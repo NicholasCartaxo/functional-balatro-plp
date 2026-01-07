@@ -5,6 +5,7 @@ Para rodar, eu utilizei o comando no terminal, já dentro do diretorio principal
 
 Depois de compilar, acessem o diretório app e executem no terminal:
 > .\Main.exe
+
 ! Importante mencionar que descobrimos que dependendo de qual terminal/SO utilizar, a UTF-8 não funciona, podendo aparecer caracteres corrompidos ao executar o Main.exe, logo, antes de executar qualquer coisa, definam a UTF-8 como formatação padrão de caracteres do terminal de vocês. No meu (Windows PowerShell) eu utilizei:
 > [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
 
