@@ -29,7 +29,7 @@ rankValue RQ  = 10
 rankValue RK  = 10
 rankValue RA = 11
 
-data Suit = Spade | Heart | Club | Diamond
+data Suit = Spade | Heart | Diamond | Club
   deriving (Eq, Ord)
 instance Show Suit where
   show Spade   = "\x2660" -- unicode characters for suits
