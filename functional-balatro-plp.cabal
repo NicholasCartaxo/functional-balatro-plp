@@ -25,12 +25,11 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
-      PokerHands
       Cards
-  other-modules:
       GameLoop
       Jokers
+      PokerHands
+  other-modules:
       Paths_functional_balatro_plp
   autogen-modules:
       Paths_functional_balatro_plp
