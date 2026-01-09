@@ -21,5 +21,5 @@ stack build
 Run the following command to execute the project:
 
 ```bash
-stack exec functional-balatro-plp
+stack exec functional-balatro-plp-exe
 ```
