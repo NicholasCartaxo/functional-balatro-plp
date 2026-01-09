@@ -6,6 +6,7 @@ module GameLoop
 import Cards
 import PokerHands
 import Jokers
+import FullRoundLoop
 import Data.Char (digitToInt)
 import Data.List (sortOn)
 
@@ -23,16 +24,16 @@ data RoundGameState = RoundGameState
 instance Show RoundGameState where
   show gameState = show (hand gameState)
 
-initialRoundGameState :: RoundGameState
-initialRoundGameState = RoundGameState
+initialRoundGameState :: FullRoundState -> RoundGameState
+initialRoundGameState fullRoundState = RoundGameState
   { hands = 4
   , discards = 3
   , hand = sortByRank [(card, False) | card <- take 8 fullDeck]
   , deck = drop 8 fullDeck
   , score = 0
-  , targetScore = 300
-  , jokers = []
-  , pokerHandChipsMult = getInitialPokerHandChipsMult
+  , targetScore = currentTargetScore fullRoundState 
+  , jokers = currentJokers fullRoundState
+  , pokerHandChipsMult = currentPokerHandChipsMult fullRoundState
   }
 
 -- playGameLoopControls:
@@ -72,13 +73,13 @@ sortByRank = sortOn (\(Card rank _, _) -> rank)
 updateRoundGameState :: Char -> RoundGameState -> RoundGameState
 updateRoundGameState action state
   |isValidDigit action = state {hand = toggleAtPos (digitToInt action) (hand state)}
-  |action == 'q' && not (null selectedHand) = state
+  |action == 'q' && not (null selectedHand) && hands state > 0 = state
     { hands = hands state - 1
     , hand = nextHand
     , deck = nextDeck
     , score = score state + getScore handChipsMult
     }
-  |action == 'w' && not (null selectedHand) = state
+  |action == 'w' && not (null selectedHand) && discards state > 0 = state
     { discards = discards state - 1
     , hand = nextHand
     , deck = nextDeck
