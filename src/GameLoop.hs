@@ -73,13 +73,13 @@ sortByRank = sortOn (\(Card rank _, _) -> rank)
 updateRoundGameState :: Char -> RoundGameState -> RoundGameState
 updateRoundGameState action state
   |isValidDigit action = state {hand = toggleAtPos (digitToInt action) (hand state)}
-  |action == 'q' && not (null selectedHand) = state
+  |action == 'q' && not (null selectedHand) && hands state > 0 = state
     { hands = hands state - 1
     , hand = nextHand
     , deck = nextDeck
     , score = score state + getScore handChipsMult
     }
-  |action == 'w' && not (null selectedHand) = state
+  |action == 'w' && not (null selectedHand) && discards state > 0 = state
     { discards = discards state - 1
     , hand = nextHand
     , deck = nextDeck
