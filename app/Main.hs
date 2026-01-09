@@ -25,6 +25,7 @@ renderHand hand =
 
 printGameState :: RoundGameState -> IO ()
 printGameState st = do
+  putStr "\ESC[2J\ESC[H"
   putStrLn "\n===================================="
   putStrLn " MÃO ATUAL"
   putStrLn "===================================="
