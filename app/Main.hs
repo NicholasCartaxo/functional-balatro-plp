@@ -5,6 +5,8 @@ import GameLoop
 import Cards
 import PokerHands
 import Jokers
+import FullRoundLoop (initialFullRoundState)
+
 
 import System.IO (hFlush, stdout)
 
@@ -22,10 +24,30 @@ renderHand :: [(Card,Bool)] -> String
 renderHand hand =
   unlines (zipWith renderCard [1..] hand)
 
+renderJoker :: Int -> Maybe Joker -> String
+renderJoker i Nothing =
+  "[" ++ show i ++ "] [ ]"
+
+renderJoker i (Just joker) =
+  "[" ++ show i ++ "] "
+  ++ show joker
+  ++ " — "
+  ++ getDescription joker
+
+renderJokers :: [Joker] -> String
+renderJokers js =
+  let slots = take 5 (map Just js ++ repeat Nothing)
+  in unlines (zipWith renderJoker [1..5] slots)
+
 
 printGameState :: RoundGameState -> IO ()
 printGameState st = do
   putStr "\ESC[2J\ESC[H"
+  putStrLn "\n===================================="
+  putStrLn " CORINGAS"
+  putStrLn "===================================="
+  putStrLn (renderJokers (jokers st))
+
   putStrLn "\n===================================="
   putStrLn " MÃO ATUAL"
   putStrLn "===================================="
@@ -111,5 +133,6 @@ main = do
   hSetEncoding stdout utf8
   hSetEncoding stdin utf8
   putStrLn "\n=== BALATRO - Card Game ==="
-  gameLoop initialRoundGameState
+  gameLoop (initialRoundGameState initialFullRoundState)
+
 
