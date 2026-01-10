@@ -5,8 +5,7 @@ import GameLoop
 import Cards
 import PokerHands
 import Jokers
-import FullRoundLoop (initialFullRoundState)
-
+import FullRoundLoop
 
 import System.IO (hFlush, stdout)
 
@@ -75,6 +74,20 @@ printGameState st = do
   putStrLn " x   = sair"
   putStrLn "------------------------------------"
 
+pickJokerOrIncreasePokerHand :: FullRoundState -> IO FullRoundState
+pickJokerOrIncreasePokerHand st = do
+  putStrLn "ESCOLHE O JOKER PORRA"
+  return (nextFullRoundState st)
+  
+fullRoundLoop :: FullRoundState -> IO()
+fullRoundLoop st = do
+  result <- gameLoop (initialRoundGameState st)
+  if result then do
+    nextFullRoundState <- (pickJokerOrIncreasePokerHand st)
+    fullRoundLoop nextFullRoundState
+  else do
+    putStrLn ("VOCÊ PERDEU, PARABÉNS! O MÁXIMO QUE TU ATINGIU FOI A RODADA " ++ show (currentRound st))
+    return()
 
 -- Condições para finalizar rodada / jogo
 
@@ -84,10 +97,9 @@ isWin st = score st >= targetScore st
 isOutOfMoves :: RoundGameState -> Bool
 isOutOfMoves st = hands st <= 0
 
-
 -- Loop principal
 
-gameLoop :: RoundGameState -> IO ()
+gameLoop :: RoundGameState -> IO Bool
 gameLoop st = do
 
   printGameState st
@@ -96,12 +108,12 @@ gameLoop st = do
   -- talvez vamos ter que chamar o loop novamente com o updateRoundGameState @Cartaxo
   if isWin st then do
     putStrLn "\n🎉 Você atingiu a pontuação alvo!"
-    return ()
+    return True
 
   else if isOutOfMoves st then do
-    putStrLn "\n❌ Acabaram as jogadas e/ou descartes!"
+    putStrLn "\n❌ Acabaram as jogadas!"
     putStrLn "Fim de jogo!"
-    return ()
+    return False
 
   else do
     putStr "Escolha uma ação: "
@@ -118,12 +130,9 @@ gameLoop st = do
           if null line then ' '
           else head line
 
-    if action == 'x' then do
-      putStrLn "\nSaindo do jogo..."
-      return ()
-    else do
-      let st' = updateRoundGameState action st 
-      gameLoop st'
+    let st' = updateRoundGameState action st 
+    gameLoop st'
+
 
 
 -- Main - rodar inicialmente o jogo
@@ -133,6 +142,6 @@ main = do
   hSetEncoding stdout utf8
   hSetEncoding stdin utf8
   putStrLn "\n=== BALATRO - Card Game ==="
-  gameLoop (initialRoundGameState initialFullRoundState)
+  fullRoundLoop initialFullRoundState
 
 
