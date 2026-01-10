@@ -2,6 +2,7 @@ module GameLoop
   ( RoundGameState(..)
   , initialRoundGameState
   , updateRoundGameState
+  , playedPokerHandAndChipsMult
   ) where
 import Cards
 import PokerHands
@@ -70,6 +71,14 @@ sortBySuit = sortOn (\(Card _ suit, _) -> suit)
 sortByRank :: [(Card,Bool)] -> [(Card,Bool)]
 sortByRank = sortOn (\(Card rank _, _) -> rank)
 
+playedPokerHandAndChipsMult :: RoundGameState -> (PokerHand,ChipsMult)
+playedPokerHandAndChipsMult state = (pokerHand, scoredChipsMult)
+  where 
+    selectedHand = fst (separateSelected (hand state))
+    pokerHandAndScored = getPokerHandAndCards selectedHand
+    pokerHand = fst pokerHandAndScored
+    scoredChipsMult = foldl (\chipsMult (Joker _ func) -> func chipsMult pokerHandAndScored) (getChipsMultOfHand (pokerHandChipsMult state) selectedHand) (jokers state)
+
 updateRoundGameState :: Char -> RoundGameState -> RoundGameState
 updateRoundGameState action state
   |isValidDigit action = state {hand = toggleAtPos (digitToInt action) (hand state)}
@@ -90,5 +99,4 @@ updateRoundGameState action state
   where
     (selectedHand, remainingHand) = separateSelected (hand state)
     (nextHand, nextDeck) = drawNCards (length selectedHand) remainingHand (deck state)
-    pokerHandAndScored = getPokerHandAndCards selectedHand
-    handChipsMult = foldl (\chipsMult (Joker _ func) -> func chipsMult pokerHandAndScored) (getChipsMultOfHand (pokerHandChipsMult state) selectedHand) (jokers state)
+    handChipsMult = snd (playedPokerHandAndChipsMult state)

@@ -36,10 +36,11 @@ ghc-options:
 library:
   source-dirs: src
   exposed-modules:
+  - PokerHands
   - Cards
+  - FullRoundLoop
   - GameLoop
   - Jokers
-  - PokerHands
 
 executables:
   functional-balatro-plp-exe:
