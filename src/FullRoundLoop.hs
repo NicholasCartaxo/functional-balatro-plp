@@ -1,6 +1,7 @@
 module FullRoundLoop
   ( FullRoundState(..)
   , initialFullRoundState
+  , nextFullRoundState
   , upgradedPokerHandFullRoundState
   , notFullJokerFullRoundState
   , fullJokerFullRoundState
@@ -12,6 +13,7 @@ import Data.Char (digitToInt)
 
 data FullRoundState = FullRoundState
   { currentTargetScore :: Integer
+  , currentRound :: Integer
   , currentJokers :: [Joker]
   , currentPokerHandChipsMult :: PokerHand -> ChipsMult
   }
@@ -19,8 +21,17 @@ data FullRoundState = FullRoundState
 initialFullRoundState :: FullRoundState
 initialFullRoundState = FullRoundState
   { currentTargetScore = 300
+  , currentRound = 1
   , currentJokers = []
   , currentPokerHandChipsMult = getInitialPokerHandChipsMult
+  }
+
+nextFullRoundState :: FullRoundState -> FullRoundState
+nextFullRoundState state = FullRoundState
+  { currentTargetScore = currentTargetScore state * 2
+  , currentRound = currentRound state + 1
+  , currentJokers = currentJokers state
+  , currentPokerHandChipsMult = currentPokerHandChipsMult state
   }
 
 upgradedPokerHandFullRoundState :: PokerHand -> FullRoundState -> FullRoundState
