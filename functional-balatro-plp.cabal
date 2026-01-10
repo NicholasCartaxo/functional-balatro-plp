@@ -30,7 +30,6 @@ library
       FullRoundLoop
       GameLoop
       Jokers
-      PokerHands
   other-modules:
       Paths_functional_balatro_plp
   autogen-modules:
