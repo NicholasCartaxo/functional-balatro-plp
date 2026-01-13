@@ -1,25 +1,22 @@
 module Main where
+
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
-import System.IO
+import System.IO (hSetEncoding, stdin, stdout, hFlush)
+import Data.Char (digitToInt) 
 import GameLoop
 import Cards
 import PokerHands
 import Jokers
 import FullRoundLoop
 
-import System.IO (hFlush, stdout)
-
--- Fizemos a primeira exibição das cartas, mas pretendemos inserir uma formatação melhorada, 
--- com () entre as cartas selecionadas
 renderCard :: Int -> (Card, Bool) -> String
 renderCard i (card, selected) =
   "[" ++ show i ++ "] "
   ++ show card
   ++ if selected then " *" else ""
 
--- renderiza a mão do jogador, aplicando a renderização de acda carta individualmente 
--- já com seus índices (utilizados em renderCard)
-renderHand :: [(Card,Bool)] -> String
+-- Renderiza a mão do jogador
+renderHand :: [(Card, Bool)] -> String
 renderHand hand =
   unlines (zipWith renderCard [1..] hand)
 
@@ -41,7 +38,7 @@ renderJokers js =
 
 printGameState :: RoundGameState -> IO ()
 printGameState st = do
-  putStr "\ESC[2J\ESC[H"
+  putStr "\ESC[2J\ESC[H" 
   putStrLn "\n===================================="
   putStrLn " CORINGAS"
   putStrLn "===================================="
@@ -50,7 +47,7 @@ printGameState st = do
   putStrLn "\n===================================="
   putStrLn " MÃO ATUAL"
   putStrLn "===================================="
-  -- transformamos a mão em um parágrafo de texto
+
   putStrLn (renderHand (hand st))
 
   putStrLn "------------------------------------"
@@ -74,22 +71,47 @@ printGameState st = do
   putStrLn " x   = sair"
   putStrLn "------------------------------------"
 
+allJokers :: [Joker]
+allJokers =
+  [ multClubs
+  , multHearts
+  , redSquid
+  , twoDucks
+  , fanta
+  , sixtyNine
+  , fiftyOne
+  , theBite
+  ]
+
+rewardJokers :: [Joker]
+rewardJokers = take 2 allJokers
+
 pickJokerOrIncreasePokerHand :: FullRoundState -> IO FullRoundState
 pickJokerOrIncreasePokerHand st = do
-  putStrLn "ESCOLHE O JOKER PORRA"
-  return (nextFullRoundState st)
-  
-fullRoundLoop :: FullRoundState -> IO()
+  putStrLn "\n=== Bônus da rodada  ===\n"
+  putStrLn "Para a próxima fase você pode escolher um dos bônus:" -- Correção: putSrtLn -> putStrLn
+  -- acredito que aqui vamos aexibir os 2 coringas aleatorios e a mao aleatori
+  putStrLn "1 - Receber 2 Coringas"
+  putStrLn "2 - Receber melhoria de mão"
+
+  putStr "\nEscolha (1-2): "
+  hFlush stdout
+  choice <- getLine
+
+  case choice of
+    "1" -> -- implementar funcao q aplique os coringas e verifique se ta cheio 
+    "2" -> -- implementar funcao q aplique a melhoria de mao aleatorio 
+
+fullRoundLoop :: FullRoundState -> IO ()
 fullRoundLoop st = do
   result <- gameLoop (initialRoundGameState st)
   if result then do
-    nextFullRoundState <- (pickJokerOrIncreasePokerHand st)
-    fullRoundLoop nextFullRoundState
+    newSt <- pickJokerOrIncreasePokerHand st
+    fullRoundLoop newSt
   else do
     putStrLn ("VOCÊ PERDEU, PARABÉNS! O MÁXIMO QUE TU ATINGIU FOI A RODADA " ++ show (currentRound st))
-    return()
+    return ()
 
--- Condições para finalizar rodada / jogo
 
 isWin :: RoundGameState -> Bool
 isWin st = score st >= targetScore st
@@ -97,15 +119,12 @@ isWin st = score st >= targetScore st
 isOutOfMoves :: RoundGameState -> Bool
 isOutOfMoves st = hands st <= 0
 
--- Loop principal
 
 gameLoop :: RoundGameState -> IO Bool
 gameLoop st = do
 
   printGameState st
 
-  -- Aqui eu não sei como vai fazer pra retornar o gameloop pra proxima rodada
-  -- talvez vamos ter que chamar o loop novamente com o updateRoundGameState @Cartaxo
   if isWin st then do
     putStrLn "\n🎉 Você atingiu a pontuação alvo!"
     return True
@@ -117,15 +136,10 @@ gameLoop st = do
 
   else do
     putStr "Escolha uma ação: "
-    --Quando a gente tava fazendo esse babado aqui, tava dando errado e não tava aparecendo
-    -- Ai a gente achou a explicação de que as vezes haskell guarda as informaçõe em um buffer,
-    -- e com esse comando abaixo, a gente consegue printar intantaneamente @Cartas
     hFlush stdout
 
-    --leitura da entrada do usuário
     line <- getLine
 
-    --tratamento, caso entrada da line esteja vazia
     let action =
           if null line then ' '
           else head line
@@ -133,9 +147,6 @@ gameLoop st = do
     let st' = updateRoundGameState action st 
     gameLoop st'
 
-
-
--- Main - rodar inicialmente o jogo
 main :: IO ()
 main = do
   setLocaleEncoding utf8
@@ -143,5 +154,3 @@ main = do
   hSetEncoding stdin utf8
   putStrLn "\n=== BALATRO - Card Game ==="
   fullRoundLoop initialFullRoundState
-
-
