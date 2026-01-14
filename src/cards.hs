@@ -4,7 +4,10 @@ module Cards
   , Suit(..)
   , Card(..)
   , fullDeck
+  , shuffle
   ) where
+
+import System.Random (randomRIO)
 
 data Rank = R2 | R3 | R4 | R5 | R6 | R7 | R8 | R9 | R10 | RJ | RQ | RK | RA
   deriving (Eq, Ord, Enum, Bounded)
@@ -57,3 +60,11 @@ fullDeck = [Card RA Spade, Card RA Heart, Card RA Diamond, Card RA Club,
         Card RQ Spade, Card RQ Heart, Card RQ Diamond, Card RQ Club,
         Card RK Spade, Card RK Heart, Card RK Diamond, Card RK Club
         ]
+
+shuffle :: [a] -> IO[a]
+shuffle [] = return []
+shuffle xs = do
+  randIdx <- randomRIO(0, length xs - 1)
+  let (left, (picked:right)) = splitAt randIdx xs
+  rest <- shuffle (left ++ right)
+  return (picked : rest)
