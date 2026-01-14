@@ -25,11 +25,11 @@ data RoundGameState = RoundGameState
 instance Show RoundGameState where
   show gameState = show (hand gameState)
 
-initialRoundGameState :: FullRoundState -> RoundGameState
-initialRoundGameState fullRoundState = RoundGameState
+initialRoundGameState :: FullRoundState -> [Card] -> RoundGameState
+initialRoundGameState fullRoundState scrambledDeck = RoundGameState
   { hands = 4
   , discards = 3
-  , hand = sortByRank [(card, False) | card <- take 8 fullDeck]
+  , hand = sortByRank [(card, False) | card <- take 8 scrambledDeck]
   , deck = drop 8 fullDeck
   , score = 0
   , targetScore = currentTargetScore fullRoundState 
