@@ -120,8 +120,9 @@ pickJokerOrIncreasePokerHand st0 = do
 
   ((idxJ1, idxJ2), idxPokerHand, st') <- generateShopIdx st
 
-  putStrLn ("Joker 1 " ++ show (allJokers !! idxJ1))
-  putStrLn ("Joker 2 " ++ show (allJokers !! idxJ2))
+  scrambledAllJokers <- shuffle allJokers
+  putStrLn ("Joker 1 " ++ show (scrambledAllJokers !! idxJ1))
+  putStrLn ("Joker 2 " ++ show (scrambledAllJokers !! idxJ2))
   putStrLn ("Melhoria de mão " ++ show (allPokerHands !! idxPokerHand))
 
   putStrLn "1-2 : Recebe um coringa"
@@ -131,7 +132,7 @@ pickJokerOrIncreasePokerHand st0 = do
   hFlush stdout
   choice <- getLine
 
-  let jokerList' = allJokers
+  let jokerList' = scrambledAllJokers
       pokerHandList' = allPokerHands
 
       chooseJoker :: Int -> IO FullRoundState
