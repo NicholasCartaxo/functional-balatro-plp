@@ -104,7 +104,8 @@ pickJokerOrIncreasePokerHand st = do
 
 fullRoundLoop :: FullRoundState -> IO ()
 fullRoundLoop st = do
-  result <- gameLoop (initialRoundGameState st)
+  scrambledDeck <- shuffle fullDeck
+  result <- gameLoop (initialRoundGameState st scrambledDeck)
   if result then do
     newSt <- pickJokerOrIncreasePokerHand st
     fullRoundLoop newSt
