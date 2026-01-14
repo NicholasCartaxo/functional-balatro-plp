@@ -1,6 +1,7 @@
 module PokerHands
   ( PokerHand(..)
   , getPokerHandAndCards
+  , allPokerHands
   , ChipsMult(..)
   , getScore
   , getInitialPokerHandChipsMult
@@ -14,6 +15,18 @@ import Data.Maybe (isJust,fromJust)
 data PokerHand = StraightFlush | FourOfAKind | FullHouse | Flush | Straight | ThreeOfAKind | TwoPair | Pair | HighCard
   deriving (Eq, Ord, Enum, Bounded)
 
+allPokerHands :: [PokerHand]
+allPokerHands =
+  [ StraightFlush
+  , FourOfAKind
+  , FullHouse
+  , Flush
+  , Straight
+  , ThreeOfAKind
+  , TwoPair
+  , Pair
+  , HighCard
+  ]
 instance Show PokerHand where
   show StraightFlush = "Straight Flush"
   show FourOfAKind = "Quadra"

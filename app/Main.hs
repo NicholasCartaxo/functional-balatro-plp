@@ -2,12 +2,14 @@ module Main where
 
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import System.IO (hSetEncoding, stdin, stdout, hFlush)
-import Data.Char (digitToInt) 
+import Data.Char
 import GameLoop
 import Cards
 import PokerHands
 import Jokers
 import FullRoundLoop
+import Data.List (delete)
+import Shop
 
 renderCard :: Int -> (Card, Bool) -> String
 renderCard i (card, selected) =
@@ -71,37 +73,93 @@ printGameState st = do
   putStrLn " x   = sair"
   putStrLn "------------------------------------"
 
-allJokers :: [Joker]
-allJokers =
-  [ multClubs
-  , multHearts
-  , redSquid
-  , twoDucks
-  , fanta
-  , sixtyNine
-  , fiftyOne
-  , theBite
-  ]
+fullJokersList :: [Joker] -> Bool
+fullJokersList js = length js >= 5
 
-rewardJokers :: [Joker]
-rewardJokers = take 2 allJokers
+emptyJokersList :: [Joker] -> Bool
+emptyJokersList js = length js <= 0
 
-pickJokerOrIncreasePokerHand :: FullRoundState -> IO FullRoundState
-pickJokerOrIncreasePokerHand st = do
-  putStrLn "\n=== Bônus da rodada  ===\n"
-  putStrLn "Para a próxima fase você pode escolher um dos bônus:" -- Correção: putSrtLn -> putStrLn
-  -- acredito que aqui vamos aexibir os 2 coringas aleatorios e a mao aleatori
-  putStrLn "1 - Receber 2 Coringas"
-  putStrLn "2 - Receber melhoria de mão"
-
-  putStr "\nEscolha (1-2): "
+switchJokersPosition :: FullRoundState -> IO FullRoundState
+switchJokersPosition st = do
+  putStrLn ("\nParabéns! Você passou da " ++ show (currentRound st) ++ "° rodada.")
+  putStrLn "\nVocê quer trocar a ordem dos jokers? (s/n)"
   hFlush stdout
   choice <- getLine
 
-  case choice of
-    "1" -> -- implementar funcao q aplique os coringas e verifique se ta cheio 
-    "2" -> -- implementar funcao q aplique a melhoria de mao aleatorio 
+  if choice == "s" then do
+    if null (currentJokers st) then do
+      putStrLn "Seu deck de Jokers está vazio, nenhuma troca foi efetuada!"
+      return st
+    else if length (currentJokers st) < 2 then do
+      putStrLn "Você tem apenas 1 joker em sua mão, nenhuma troca foi efetuada!"
+      return st
+    else do
+      putStrLn "\nQual a posição do primeiro joker da troca? (1-5)"
+      hFlush stdout
+      j1 <- getLine
 
+      putStrLn "\nQual a posição do segundo joker da troca? (1-5)"
+      hFlush stdout
+      j2 <- getLine
+
+      case (j1, j2) of
+        ([c1], [c2]) | (c1 >= '1' && c1 <= '5') && (c2 >= '1' && c2 <= '5') ->
+          return (changeJokerOrderFullRoundState c1 c2 st)
+        _ -> do
+          putStrLn "Entrada inválida."
+          return st
+  else do
+    return st
+
+pickJokerOrIncreasePokerHand :: FullRoundState -> IO FullRoundState
+pickJokerOrIncreasePokerHand st0 = do
+  st <- switchJokersPosition st0
+
+  putStrLn "\n=== Bônus da rodada ===\n"
+  putStrLn "Para a próxima fase você pode escolher um dos bônus:"
+
+  ((idxJ1, idxJ2), idxPokerHand, st') <- generateShopIdx st
+
+  putStrLn ("Joker 1 " ++ show (allJokers !! idxJ1))
+  putStrLn ("Joker 2 " ++ show (allJokers !! idxJ2))
+  putStrLn ("Melhoria de mão " ++ show (allPokerHands !! idxPokerHand))
+
+  putStrLn "1-2 : Recebe um coringa"
+  putStrLn "3   : Recebe melhoria de mão"
+
+  putStr "\nEscolha (1-3): "
+  hFlush stdout
+  choice <- getLine
+
+  let jokerList' = allJokers
+      pokerHandList' = allPokerHands
+
+      chooseJoker :: Int -> IO FullRoundState
+      chooseJoker idxJ =
+        if not (fullJokersList (currentJokers st'))
+          then return (nextFullRoundState (notFullJokerFullRoundState (intToDigit (idxJ + 1)) jokerList' st'))
+          else do
+            putStrLn "\nSua lista de Jokers tá cheia, escolha qual joker você quer retirar (1-5): "
+            hFlush stdout
+            oldIdxStr <- getLine
+
+            case oldIdxStr of
+              [c] | c >= '1' && c <= '5' ->
+                return (nextFullRoundState (fullJokerFullRoundState (intToDigit (idxJ + 1)) c jokerList' st'))
+              _ -> do
+                putStrLn "Índice inválido!"
+                chooseJoker idxJ
+
+  case choice of
+    "1" -> chooseJoker idxJ1
+    "2" -> chooseJoker idxJ2
+    "3" -> do
+      let ph = pokerHandList' !! idxPokerHand
+      return (nextFullRoundState (upgradedPokerHandFullRoundState ph st'))
+    _ -> do
+      putStrLn "Opção inválida"
+      pickJokerOrIncreasePokerHand st'
+  
 fullRoundLoop :: FullRoundState -> IO ()
 fullRoundLoop st = do
   scrambledDeck <- shuffle fullDeck
