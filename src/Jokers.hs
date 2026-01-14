@@ -1,5 +1,6 @@
 module Jokers
   ( Joker(..)
+  , allJokers
   , getDescription
   , multClubs
   , multHearts
@@ -20,6 +21,18 @@ instance Eq Joker where
 
 instance Show Joker where
   show (Joker name _) = name
+
+allJokers :: [Joker]
+allJokers =
+  [ multClubs
+  , multHearts
+  , redSquid
+  , twoDucks
+  , fanta
+  , sixtyNine
+  , fiftyOne
+  , theBite
+  ]
 
 getDescription :: Joker -> String
 getDescription joker

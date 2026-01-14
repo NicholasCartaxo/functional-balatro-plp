@@ -16,6 +16,8 @@ data FullRoundState = FullRoundState
   , currentRound :: Integer
   , currentJokers :: [Joker]
   , currentPokerHandChipsMult :: PokerHand -> ChipsMult
+  , jokerList :: [Int]
+  , pokerHandList :: [Int]
   }
 
 initialFullRoundState :: FullRoundState
@@ -24,6 +26,8 @@ initialFullRoundState = FullRoundState
   , currentRound = 1
   , currentJokers = []
   , currentPokerHandChipsMult = getInitialPokerHandChipsMult
+  , jokerList = [0 .. length allJokers - 1]
+  , pokerHandList = [0 .. length allPokerHands - 1]
   }
 
 nextFullRoundState :: FullRoundState -> FullRoundState
@@ -32,6 +36,8 @@ nextFullRoundState state = FullRoundState
   , currentRound = currentRound state + 1
   , currentJokers = currentJokers state
   , currentPokerHandChipsMult = currentPokerHandChipsMult state
+  , jokerList = jokerList state
+  , pokerHandList = pokerHandList state
   }
 
 upgradedPokerHandFullRoundState :: PokerHand -> FullRoundState -> FullRoundState
