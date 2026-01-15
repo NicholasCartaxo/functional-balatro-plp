@@ -1,15 +1,20 @@
-module Main where
+module Main (main) where
 
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
-import System.IO (hSetEncoding, stdin, stdout, hFlush)
+import System.IO (stdin, stdout)
 import Data.Char
 import GameLoop
 import Cards
 import PokerHands
 import Jokers
 import FullRoundLoop
-import Data.List (delete)
-import Shop
+import GHC.IO.Handle
+
+getCharAndClean :: IO Char
+getCharAndClean = do
+    c <- getChar
+    _ <- getLine
+    return c
 
 renderCard :: Int -> (Card, Bool) -> String
 renderCard i (card, selected) =
@@ -19,8 +24,8 @@ renderCard i (card, selected) =
 
 -- Renderiza a mão do jogador
 renderHand :: [(Card, Bool)] -> String
-renderHand hand =
-  unlines (zipWith renderCard [1..] hand)
+renderHand xs =
+  unlines (zipWith renderCard [1..] xs)
 
 renderJoker :: Int -> Maybe Joker -> String
 renderJoker i Nothing =
@@ -34,13 +39,15 @@ renderJoker i (Just joker) =
 
 renderJokers :: [Joker] -> String
 renderJokers js =
-  let slots = take 5 (map Just js ++ repeat Nothing)
+  let slots = map Just js
   in unlines (zipWith renderJoker [1..5] slots)
 
+clearTerminal :: IO ()
+clearTerminal = putStr "\n\ESC[2J\ESC[H"
 
 printGameState :: RoundGameState -> IO ()
 printGameState st = do
-  putStr "\ESC[2J\ESC[H" 
+  clearTerminal
   putStrLn "\n===================================="
   putStrLn " CORINGAS"
   putStrLn "===================================="
@@ -56,7 +63,8 @@ printGameState st = do
   putStrLn (
     "Pontuação: " ++ show (score st)
     ++ "         Objetivo: " ++ show (targetScore st))
-  
+  putStrLn ("Mão atual: " ++ show pokerHand)
+  putStrLn ("Pontuação da mão atual: " ++ show chipsMult)
   putStrLn " "
 
   putStrLn (
@@ -70,106 +78,91 @@ printGameState st = do
   putStrLn " w   = descartar cartas"
   putStrLn " e   = ordenar por naipe"
   putStrLn " r   = ordenar por valor"
-  putStrLn " x   = sair"
   putStrLn "------------------------------------"
+
+  where
+    (pokerHand, chipsMult) = playedPokerHandAndChipsMult st
 
 fullJokersList :: [Joker] -> Bool
 fullJokersList js = length js >= 5
 
-emptyJokersList :: [Joker] -> Bool
-emptyJokersList js = length js <= 0
+isCharBetween :: Char -> Int -> Int -> Bool
+isCharBetween c i j = c >= intToDigit i && c <= intToDigit j
 
 switchJokersPosition :: FullRoundState -> IO FullRoundState
-switchJokersPosition st = do
-  putStrLn ("\nParabéns! Você passou da " ++ show (currentRound st) ++ "° rodada.")
-  putStrLn "\nVocê quer trocar a ordem dos jokers? (s/n)"
-  hFlush stdout
-  choice <- getLine
-
-  if choice == "s" then do
-    if null (currentJokers st) then do
-      putStrLn "Seu deck de Jokers está vazio, nenhuma troca foi efetuada!"
-      return st
-    else if length (currentJokers st) < 2 then do
-      putStrLn "Você tem apenas 1 joker em sua mão, nenhuma troca foi efetuada!"
-      return st
-    else do
-      putStrLn "\nQual a posição do primeiro joker da troca? (1-5)"
-      hFlush stdout
-      j1 <- getLine
-
-      putStrLn "\nQual a posição do segundo joker da troca? (1-5)"
-      hFlush stdout
-      j2 <- getLine
-
-      case (j1, j2) of
-        ([c1], [c2]) | (c1 >= '1' && c1 <= '5') && (c2 >= '1' && c2 <= '5') ->
-          return (changeJokerOrderFullRoundState c1 c2 st)
-        _ -> do
-          putStrLn "Entrada inválida."
-          return st
+switchJokersPosition st =
+  if length (currentJokers st) < 2
+    then return st
   else do
-    return st
+    
+    clearTerminal
+    putStrLn "Você quer trocar a ordem dos jokers? Insira as posições dos jokers a serem trocados ou insira qualquer outra tecla para continuar.\n"
+    putStrLn (renderJokers (currentJokers st))
+    putStr "Joker 1: "
+    hFlush stdout
+    choice1 <- getCharAndClean
+
+    if isCharBetween choice1 1 (length (currentJokers st)) then do
+      putStr "Joker 2: "
+      hFlush stdout
+      choice2 <- getCharAndClean
+
+      if isCharBetween choice2 1 (length (currentJokers st))
+        then switchJokersPosition (changeJokerOrderFullRoundState choice1 choice2 st)
+      else return st
+
+    else do
+      return st
 
 pickJokerOrIncreasePokerHand :: FullRoundState -> IO FullRoundState
-pickJokerOrIncreasePokerHand st0 = do
-  st <- switchJokersPosition st0
+pickJokerOrIncreasePokerHand st = do
 
+  clearTerminal
+
+  putStrLn "\n🎉 Você atingiu a pontuação alvo!"
   putStrLn "\n=== Bônus da rodada ===\n"
   putStrLn "Para a próxima fase você pode escolher um dos bônus:"
 
-  ((idxJ1, idxJ2), idxPokerHand, st') <- generateShopIdx st
-
-  putStrLn ("Joker 1 " ++ show (allJokers !! idxJ1))
-  putStrLn ("Joker 2 " ++ show (allJokers !! idxJ2))
-  putStrLn ("Melhoria de mão " ++ show (allPokerHands !! idxPokerHand))
-
-  putStrLn "1-2 : Recebe um coringa"
-  putStrLn "3   : Recebe melhoria de mão"
+  putStrLn ("1: Joker " ++ show (head availableJokers))
+  putStrLn ("2: Joker " ++ show (availableJokers !! 1))
+  putStrLn ("3: Melhoria de mão " ++ show availablePokerHand)
 
   putStr "\nEscolha (1-3): "
   hFlush stdout
-  choice <- getLine
+  choice <- getCharAndClean
 
-  let jokerList' = allJokers
-      pokerHandList' = allPokerHands
+  let
+    fullJokersFlow = do
+      putStrLn "\nSua lista de Jokers tá cheia, escolha qual joker você quer retirar (1-5): "
+      putStr "Joker a sair: "
+      hFlush stdout
+      exitChoice <- getCharAndClean
+      if exitChoice < '1' || exitChoice > '5' then fullJokersFlow
+      else return (fullJokerFullRoundState choice exitChoice availableJokers st)
 
-      chooseJoker :: Int -> IO FullRoundState
-      chooseJoker idxJ =
-        if not (fullJokersList (currentJokers st'))
-          then return (nextFullRoundState (notFullJokerFullRoundState (intToDigit (idxJ + 1)) jokerList' st'))
-          else do
-            putStrLn "\nSua lista de Jokers tá cheia, escolha qual joker você quer retirar (1-5): "
-            hFlush stdout
-            oldIdxStr <- getLine
+    resultFullRoundState
+      |not (isCharBetween choice 1 3) = do
+        pickJokerOrIncreasePokerHand st
+      |choice == '3' = return (upgradedPokerHandFullRoundState availablePokerHand st)
+      |fullJokersList (currentJokers st) = fullJokersFlow
+      |otherwise = return (notFullJokerFullRoundState choice availableJokers st)
 
-            case oldIdxStr of
-              [c] | c >= '1' && c <= '5' ->
-                return (nextFullRoundState (fullJokerFullRoundState (intToDigit (idxJ + 1)) c jokerList' st'))
-              _ -> do
-                putStrLn "Índice inválido!"
-                chooseJoker idxJ
+  resultFullRoundState
 
-  case choice of
-    "1" -> chooseJoker idxJ1
-    "2" -> chooseJoker idxJ2
-    "3" -> do
-      let ph = pokerHandList' !! idxPokerHand
-      return (nextFullRoundState (upgradedPokerHandFullRoundState ph st'))
-    _ -> do
-      putStrLn "Opção inválida"
-      pickJokerOrIncreasePokerHand st'
-  
+  where
+    availableJokers = take 2 allJokers
+    availablePokerHand = Flush
+
+
 fullRoundLoop :: FullRoundState -> IO ()
 fullRoundLoop st = do
   result <- gameLoop (initialRoundGameState st)
-  if result then do
-    newSt <- pickJokerOrIncreasePokerHand st
-    fullRoundLoop newSt
+  if result then
+    pickJokerOrIncreasePokerHand (nextFullRoundState st) >>= switchJokersPosition >>= fullRoundLoop
   else do
+    putStrLn "\n❌ Acabaram as jogadas!"
+    putStrLn "Fim de jogo!"
     putStrLn ("VOCÊ PERDEU, PARABÉNS! O MÁXIMO QUE TU ATINGIU FOI A RODADA " ++ show (currentRound st))
-    return ()
-
 
 isWin :: RoundGameState -> Bool
 isWin st = score st >= targetScore st
@@ -183,26 +176,16 @@ gameLoop st = do
 
   printGameState st
 
-  if isWin st then do
-    putStrLn "\n🎉 Você atingiu a pontuação alvo!"
-    return True
-
-  else if isOutOfMoves st then do
-    putStrLn "\n❌ Acabaram as jogadas!"
-    putStrLn "Fim de jogo!"
-    return False
+  if isWin st then return True
+  else if isOutOfMoves st then return False
 
   else do
     putStr "Escolha uma ação: "
     hFlush stdout
 
-    line <- getLine
+    action <- getCharAndClean
 
-    let action =
-          if null line then ' '
-          else head line
-
-    let st' = updateRoundGameState action st 
+    let st' = updateRoundGameState action st
     gameLoop st'
 
 main :: IO ()
@@ -210,5 +193,4 @@ main = do
   setLocaleEncoding utf8
   hSetEncoding stdout utf8
   hSetEncoding stdin utf8
-  putStrLn "\n=== BALATRO - Card Game ==="
   fullRoundLoop initialFullRoundState

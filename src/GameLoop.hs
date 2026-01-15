@@ -72,7 +72,9 @@ sortByRank :: [(Card,Bool)] -> [(Card,Bool)]
 sortByRank = sortOn (\(Card rank _, _) -> rank)
 
 playedPokerHandAndChipsMult :: RoundGameState -> (PokerHand,ChipsMult)
-playedPokerHandAndChipsMult state = (pokerHand, scoredChipsMult)
+playedPokerHandAndChipsMult state
+  |null selectedHand = (HighCard, ChipsMult 0 0)
+  |otherwise = (pokerHand, scoredChipsMult)
   where 
     selectedHand = fst (separateSelected (hand state))
     pokerHandAndScored = getPokerHandAndCards selectedHand

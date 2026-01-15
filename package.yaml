@@ -42,7 +42,6 @@ library:
   - FullRoundLoop
   - GameLoop
   - Jokers
-  - Shop
 
 executables:
   functional-balatro-plp-exe:

@@ -29,7 +29,7 @@ rankValue RQ  = 10
 rankValue RK  = 10
 rankValue RA = 11
 
-data Suit = Spade | Heart | Club | Diamond
+data Suit = Spade | Heart | Diamond | Club
   deriving (Eq, Ord)
 instance Show Suit where
   show Spade   = "\x2660" -- unicode characters for suits
@@ -43,8 +43,7 @@ instance Show Card where
   show (Card r s) = show r ++ show s
 
 fullDeck :: [Card]
-fullDeck = [Card RA Spade, Card RA Heart, Card RA Diamond, Card RA Club,
-        Card R2 Spade, Card R2 Heart, Card R2 Diamond, Card R2 Club,
+fullDeck = [Card R2 Spade, Card R2 Heart, Card R2 Diamond, Card R2 Club,
         Card R3 Spade, Card R3 Heart, Card R3 Diamond, Card R3 Club,
         Card R4 Spade, Card R4 Heart, Card R4 Diamond, Card R4 Club,
         Card R5 Spade, Card R5 Heart, Card R5 Diamond, Card R5 Club,
@@ -55,5 +54,6 @@ fullDeck = [Card RA Spade, Card RA Heart, Card RA Diamond, Card RA Club,
         Card R10 Spade, Card R10 Heart, Card R10 Diamond, Card R10 Club,
         Card RJ Spade, Card RJ Heart, Card RJ Diamond, Card RJ Club,
         Card RQ Spade, Card RQ Heart, Card RQ Diamond, Card RQ Club,
-        Card RK Spade, Card RK Heart, Card RK Diamond, Card RK Club
+        Card RK Spade, Card RK Heart, Card RK Diamond, Card RK Club,
+        Card RA Spade, Card RA Heart, Card RA Diamond, Card RA Club
         ]

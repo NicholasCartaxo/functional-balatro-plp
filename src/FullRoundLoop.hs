@@ -48,7 +48,7 @@ upgradedPokerHandFullRoundState pokerHandUpgrade state = state {currentPokerHand
       |otherwise = currentPokerHandChipsMult state pokerHand
 
 notFullJokerFullRoundState :: Char -> [Joker] -> FullRoundState -> FullRoundState
-notFullJokerFullRoundState idx jokers state = state {currentJokers = currentJokers state ++ [selectedJoker] }
+notFullJokerFullRoundState idx jokers state = state {currentJokers = selectedJoker : currentJokers state}
   where
     selectedJoker = jokers !! (digitToInt idx - 1 )
 
