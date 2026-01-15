@@ -2,6 +2,7 @@ module Main (main) where
 
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import System.IO (stdin, stdout)
+import Utils.Shuffle (shuffle)
 import Data.Char
 import GameLoop
 import Cards
@@ -114,6 +115,16 @@ switchJokersPosition st =
     else do
       return st
 
+getRandomItem :: [item] -> IO item
+getRandomItem itemList = do
+      scrambledItemList <- shuffle itemList
+      return (head scrambledItemList)
+
+getRandomItems :: Int -> [item] -> IO [item]
+getRandomItems n itemList = do
+      scrambledItemList <- shuffle itemList
+      return (take n scrambledItemList)
+
 pickJokerOrIncreasePokerHand :: FullRoundState -> IO FullRoundState
 pickJokerOrIncreasePokerHand st = do
 
@@ -122,6 +133,9 @@ pickJokerOrIncreasePokerHand st = do
   putStrLn "\n🎉 Você atingiu a pontuação alvo!"
   putStrLn "\n=== Bônus da rodada ===\n"
   putStrLn "Para a próxima fase você pode escolher um dos bônus:"
+
+  availableJokers <- getRandomItems 2 allJokers
+  availablePokerHand <- getRandomItem allPokerHands
 
   putStrLn ("1: Joker " ++ show (head availableJokers))
   putStrLn ("2: Joker " ++ show (availableJokers !! 1))
@@ -149,14 +163,11 @@ pickJokerOrIncreasePokerHand st = do
 
   resultFullRoundState
 
-  where
-    availableJokers = take 2 allJokers
-    availablePokerHand = Flush
-
 
 fullRoundLoop :: FullRoundState -> IO ()
 fullRoundLoop st = do
-  result <- gameLoop (initialRoundGameState st)
+  roundState <- initialRoundGameState st
+  result <- gameLoop roundState
   if result then
     pickJokerOrIncreasePokerHand (nextFullRoundState st) >>= switchJokersPosition >>= fullRoundLoop
   else do

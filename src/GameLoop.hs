@@ -10,6 +10,7 @@ import Jokers
 import FullRoundLoop
 import Data.Char (digitToInt)
 import Data.List (sortOn)
+import Utils.Shuffle (shuffle)
 
 data RoundGameState = RoundGameState
   { hands :: Integer
@@ -25,17 +26,19 @@ data RoundGameState = RoundGameState
 instance Show RoundGameState where
   show gameState = show (hand gameState)
 
-initialRoundGameState :: FullRoundState -> RoundGameState
-initialRoundGameState fullRoundState = RoundGameState
-  { hands = 4
-  , discards = 3
-  , hand = sortByRank [(card, False) | card <- take 8 fullDeck]
-  , deck = drop 8 fullDeck
-  , score = 0
-  , targetScore = currentTargetScore fullRoundState 
-  , jokers = currentJokers fullRoundState
-  , pokerHandChipsMult = currentPokerHandChipsMult fullRoundState
-  }
+initialRoundGameState :: FullRoundState -> IO RoundGameState
+initialRoundGameState fullRoundState = do
+  shuffledDeck <- shuffle fullDeck
+  return RoundGameState
+    { hands = 4
+    , discards = 3
+    , hand = sortByRank [(card, False) | card <- take 8 shuffledDeck]
+    , deck = drop 8 shuffledDeck
+    , score = 0
+    , targetScore = currentTargetScore fullRoundState
+    , jokers = currentJokers fullRoundState
+    , pokerHandChipsMult = currentPokerHandChipsMult fullRoundState
+    }
 
 -- playGameLoopControls:
 -- 1-8: select card at position
