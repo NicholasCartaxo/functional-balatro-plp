@@ -12,7 +12,8 @@ module Jokers
   , theBite
   ) where
 import Cards
-import PokerHands
+    ( Card(..), Rank(R3, R2, R6, R9, R5, RA, R8), Suit(Heart, Club) )
+import PokerHands ( ChipsMult(..), PokerHand(Straight) )
 
 data Joker = Joker String (ChipsMult -> (PokerHand, [Card]) -> ChipsMult)
 

@@ -4,13 +4,20 @@ module GameLoop
   , updateRoundGameState
   , playedPokerHandAndChipsMult
   ) where
-import Cards
+import Cards ( fullDeck, Card(..) )
 import PokerHands
-import Jokers
+    ( getChipsMultOfHand,
+      getPokerHandAndCards,
+      getScore,
+      ChipsMult(..),
+      PokerHand(HighCard) )
+import Jokers ( Joker(..) )
 import FullRoundLoop
+    ( FullRoundState(currentPokerHandChipsMult, currentTargetScore,
+                     currentJokers) )
 import Data.Char (digitToInt)
 import Data.List (sortOn)
-import Utils.Shuffle (shuffle)
+import Random (shuffle)
 
 data RoundGameState = RoundGameState
   { hands :: Integer

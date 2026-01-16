@@ -8,7 +8,7 @@ module PokerHands
   , getUpgradedPokerHandChipsMult
   , getChipsMultOfHand
   ) where
-import Cards
+import Cards ( rankValue, Card(..), Rank(RA, R5) )
 import Data.List (sort,find)
 import Data.Maybe (isJust,fromJust)
 

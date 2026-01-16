@@ -30,7 +30,7 @@ library
       FullRoundLoop
       GameLoop
       Jokers
-      Utils.Shuffle
+      Random
   other-modules:
       Paths_functional_balatro_plp
   autogen-modules:

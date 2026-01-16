@@ -2,14 +2,25 @@ module Main (main) where
 
 import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import System.IO (stdin, stdout)
-import Utils.Shuffle (shuffle)
-import Data.Char
+import Data.Char ( intToDigit )
 import GameLoop
-import Cards
-import PokerHands
-import Jokers
+    ( initialRoundGameState,
+      playedPokerHandAndChipsMult,
+      updateRoundGameState,
+      RoundGameState(hands, jokers, hand, discards, score, targetScore) )
+import Cards ( Card )
+import PokerHands ( allPokerHands )
+import Jokers ( Joker, allJokers, getDescription )
 import FullRoundLoop
-import GHC.IO.Handle
+    ( FullRoundState(currentRound, currentJokers),
+      changeJokerOrderFullRoundState,
+      fullJokerFullRoundState,
+      initialFullRoundState,
+      nextFullRoundState,
+      notFullJokerFullRoundState,
+      upgradedPokerHandFullRoundState )
+import GHC.IO.Handle ( hFlush, hSetEncoding )
+import Random (getRandomItem, getRandomItems)
 
 getCharAndClean :: IO Char
 getCharAndClean = do
@@ -114,16 +125,6 @@ switchJokersPosition st =
 
     else do
       return st
-
-getRandomItem :: [item] -> IO item
-getRandomItem itemList = do
-      scrambledItemList <- shuffle itemList
-      return (head scrambledItemList)
-
-getRandomItems :: Int -> [item] -> IO [item]
-getRandomItems n itemList = do
-      scrambledItemList <- shuffle itemList
-      return (take n scrambledItemList)
 
 pickJokerOrIncreasePokerHand :: FullRoundState -> IO FullRoundState
 pickJokerOrIncreasePokerHand st = do
