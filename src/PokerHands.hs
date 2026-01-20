@@ -1,19 +1,32 @@
 module PokerHands
   ( PokerHand(..)
   , getPokerHandAndCards
+  , allPokerHands
   , ChipsMult(..)
   , getScore
   , getInitialPokerHandChipsMult
   , getUpgradedPokerHandChipsMult
   , getChipsMultOfHand
   ) where
-import Cards
+import Cards ( rankValue, Card(..), Rank(RA, R5) )
 import Data.List (sort,find)
 import Data.Maybe (isJust,fromJust)
 
 data PokerHand = StraightFlush | FourOfAKind | FullHouse | Flush | Straight | ThreeOfAKind | TwoPair | Pair | HighCard
   deriving (Eq, Ord, Enum, Bounded)
 
+allPokerHands :: [PokerHand]
+allPokerHands =
+  [ StraightFlush
+  , FourOfAKind
+  , FullHouse
+  , Flush
+  , Straight
+  , ThreeOfAKind
+  , TwoPair
+  , Pair
+  , HighCard
+  ]
 instance Show PokerHand where
   show StraightFlush = "Straight Flush"
   show FourOfAKind = "Quadra"
@@ -34,7 +47,7 @@ getStraight xs
     straightLoop [_] = True
     straightLoop [Card R5 _, Card RA _] = True
     straightLoop (Card x _:Card y __:l) =
-      (y == succ x) && straightLoop (Card y __:l)
+      y == succ x && straightLoop (Card y __:l)
 
 getFlush :: [Card] -> [Card]
 getFlush xs
@@ -44,7 +57,7 @@ getFlush xs
     flushLoop [] = True
     flushLoop [_] = True
     flushLoop (Card _ x:Card __ y:l) =
-      (x == y) && flushLoop (Card __ y:l)
+      x == y && flushLoop (Card __ y:l)
 
 countOccurrences :: [Card] -> [(Rank,Int)]
 countOccurrences xs = [(i,j) | i <- [minBound..maxBound], j <- [length (filter (\(Card x _)-> x==i) xs)], j /= 0]
@@ -100,7 +113,7 @@ getPokerHandAndCards xs = fromJust (find (not . null . snd) (map (\x -> (x,getFu
 
 data ChipsMult = ChipsMult Integer Integer
 instance Show ChipsMult where
-  show (ChipsMult c m) = (show c) ++ " x " ++ (show m)
+  show (ChipsMult c m) = show c ++ " x " ++ show m
 
 getScore :: ChipsMult -> Integer
 getScore (ChipsMult chips mult) = chips * mult

@@ -25,11 +25,13 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
       PokerHands
       Cards
-  other-modules:
+      FullRoundLoop
+      GameLoop
       Jokers
+      Random
+  other-modules:
       Paths_functional_balatro_plp
   autogen-modules:
       Paths_functional_balatro_plp
@@ -38,6 +40,7 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , random
   default-language: Haskell2010
 
 executable functional-balatro-plp-exe
@@ -52,6 +55,7 @@ executable functional-balatro-plp-exe
   build-depends:
       base >=4.7 && <5
     , functional-balatro-plp
+    , random
   default-language: Haskell2010
 
 test-suite functional-balatro-plp-test
@@ -67,4 +71,5 @@ test-suite functional-balatro-plp-test
   build-depends:
       base >=4.7 && <5
     , functional-balatro-plp
+    , random
   default-language: Haskell2010
