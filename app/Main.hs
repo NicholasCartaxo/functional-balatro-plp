@@ -41,6 +41,14 @@ getColorCode (Card _ suit) =
 resetCode :: String 
 resetCode = setSGRCode [Reset]
 
+jokersColors :: [Color]
+jokersColors = [Red, Green, Yellow, Blue, Magenta]
+
+getJokerColorCode :: Int -> String
+getJokerColorCode i =
+  let color = jokersColors !! ((i - 1) `mod` length jokersColors)
+  in setSGRCode [SetColor Foreground Vivid color]
+
 renderCard :: Int -> (Card, Bool) -> String
 renderCard i (card, selected) =
   "[" ++ show i ++ "] "
@@ -65,9 +73,11 @@ renderJoker i Nothing =
 
 renderJoker i (Just joker) =
   "[" ++ show i ++ "] "
-  ++ show joker
+  ++ getJokerColorCode i
+  ++ show joker 
   ++ " — "
   ++ getDescription joker
+  ++ resetCode
 
 renderJokers :: [Joker] -> String
 renderJokers js =
