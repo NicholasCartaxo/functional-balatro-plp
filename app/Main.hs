@@ -8,7 +8,7 @@ import GameLoop
       playedPokerHandAndChipsMult,
       updateRoundGameState,
       RoundGameState(hands, jokers, hand, discards, score, targetScore, pokerHandChipsMult) )
-import Cards ( Card )
+import Cards ( Card(..), Suit(..) )
 import PokerHands ( PokerHand, allPokerHands, getUpgradedPokerHandChipsMult )
 import Jokers ( Joker, allJokers, getDescription )
 import FullRoundLoop
@@ -21,6 +21,7 @@ import FullRoundLoop
       upgradedPokerHandFullRoundState )
 import GHC.IO.Handle ( hFlush, hSetEncoding )
 import Random (getRandomItem, getRandomItems)
+import System.Console.ANSI
 
 getCharAndClean :: IO Char
 getCharAndClean = do
@@ -28,10 +29,22 @@ getCharAndClean = do
     _ <- getLine
     return c
 
+getColorCode :: Card -> String
+getColorCode (Card _ suit) = 
+  let color = case suit of 
+                Heart -> Red
+                Spade -> Blue
+                Club -> Green
+                Diamond -> Yellow
+  in setSGRCode [SetColor Foreground Vivid color]
+
+resetCode :: String 
+resetCode = setSGRCode [Reset]
+
 renderCard :: Int -> (Card, Bool) -> String
 renderCard i (card, selected) =
   "[" ++ show i ++ "] "
-  ++ show card
+  ++ getColorCode card ++ show card ++ resetCode
   ++ if selected then " *" else ""
 
 -- Renderiza a mão do jogador
