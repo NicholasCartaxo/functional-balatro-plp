@@ -88,44 +88,75 @@ renderJokers js =
 clearTerminal :: IO ()
 clearTerminal = putStr "\n\ESC[2J\ESC[H"
 
+visibleLength :: String -> Int
+visibleLength [] = 0
+visibleLength ('\ESC':'[':xs) = visibleLength (drop 1 (dropWhile (/= 'm') xs))
+visibleLength (_:xs) = 1 + visibleLength xs
+
+padRight :: Int -> String -> String
+padRight width s =
+    let len = visibleLength s
+        padding = max 0 (width - len)
+    in s ++ replicate padding ' '
+
+combineColumns :: Int -> [String] -> [String] -> String
+combineColumns width left right =
+    let maxH = max (length left) (length right)
+        paddedLeft = left ++ replicate (maxH - length left) ""
+        paddedRight = right ++ replicate (maxH - length right) ""
+        merge l r = padRight width l ++ " | " ++ r
+    in unlines (zipWith merge paddedLeft paddedRight)
+
 printGameState :: RoundGameState -> IO ()
 printGameState st = do
   clearTerminal
-  putStrLn "\n===================================="
-  putStrLn " CORINGAS"
-  putStrLn "===================================="
-  putStrLn (renderJokers (jokers st))
+  
+  let jokersBlock = 
+        [ "===================================="
+        , " CORINGAS"
+        , "===================================="
+        ]
+        ++ lines (renderJokers (jokers st))
+        ++ [""] 
 
-  putStrLn "\n===================================="
-  putStrLn " MÃO ATUAL"
-  putStrLn "===================================="
+  mapM_ putStrLn jokersBlock
 
-  putStrLn (renderHand (hand st))
+  let statusBlock = 
+        [ "===================================="
+        , " MÃO ATUAL"
+        , "===================================="
+        ]
+        ++ lines (renderHand (hand st))
+        ++
+        [ "------------------------------------"
+        , "Pontuação: " ++ show (score st) ++ " / " ++ show (targetScore st)
+        , "Mão atual: " ++ show pokerHand
+        , "Mult: " ++ show chipsMult
+        , " "
+        , "Jogadas: " ++ show (hands st) ++ "    Descartes: " ++ show (discards st)
+        , "------------------------------------"
+        ]
 
-  putStrLn "------------------------------------"
-  putStrLn (
-    "Pontuação: " ++ show (score st)
-    ++ "         Objetivo: " ++ show (targetScore st))
-  putStrLn ("Mão atual: " ++ show pokerHand)
-  putStrLn ("Pontuação da mão atual: " ++ show chipsMult)
-  putStrLn " "
+  let commandsBlock = 
+        [ "Comandos:"
+        , " 1-8 = selecionar carta"
+        , " q   = jogar mão"
+        , " w   = descartar cartas"
+        , " e   = ordenar por naipe"
+        , " r   = ordenar por valor"
+        ]
 
-  putStrLn (
-    "Jogadas restantes: " ++ show (hands st)
-    ++ "   Descartes: " ++ show (discards st))
+  let tableBlock = 
+        [ "========================"
+        , " MÃOS DE PÔQUER"
+        , "========================"
+        ]
+        ++ lines (renderChipsMultTable st allPokerHands)
 
-  putStrLn "------------------------------------"
+  let fullLeftColumn = statusBlock ++ [""] ++ commandsBlock
 
-  putStrLn (renderChipsMultTable st allPokerHands)
-
-  putStrLn "------------------------------------"
-  putStrLn "Comandos:"
-  putStrLn " 1-8 = selecionar carta"
-  putStrLn " q   = jogar mão"
-  putStrLn " w   = descartar cartas"
-  putStrLn " e   = ordenar por naipe"
-  putStrLn " r   = ordenar por valor"
-  putStrLn "------------------------------------"
+  putStrLn (combineColumns 40 fullLeftColumn tableBlock)
+  putStrLn "--------------------------------------------------------------------"
 
   where
     (pokerHand, chipsMult) = playedPokerHandAndChipsMult st
