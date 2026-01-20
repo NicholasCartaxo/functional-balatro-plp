@@ -75,9 +75,10 @@ renderJoker i (Just joker) =
   "[" ++ show i ++ "] "
   ++ getJokerColorCode i
   ++ show joker 
+  ++ resetCode
   ++ " — "
   ++ getDescription joker
-  ++ resetCode
+  
 
 renderJokers :: [Joker] -> String
 renderJokers js =
