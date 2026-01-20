@@ -7,12 +7,12 @@ import GameLoop
     ( initialRoundGameState,
       playedPokerHandAndChipsMult,
       updateRoundGameState,
-      RoundGameState(hands, jokers, hand, discards, score, targetScore) )
+      RoundGameState(hands, jokers, hand, discards, score, targetScore, deck, pokerHandChipsMult) )
 import Cards ( Card )
-import PokerHands ( allPokerHands )
+import PokerHands ( PokerHand, ChipsMult, allPokerHands, getChipsMultOfHand, getInitialPokerHandChipsMult, getUpgradedPokerHandChipsMult )
 import Jokers ( Joker, allJokers, getDescription )
 import FullRoundLoop
-    ( FullRoundState(currentRound, currentJokers),
+    ( FullRoundState(currentRound, currentJokers, currentPokerHandChipsMult),
       changeJokerOrderFullRoundState,
       fullJokerFullRoundState,
       initialFullRoundState,
@@ -38,6 +38,13 @@ renderCard i (card, selected) =
 renderHand :: [(Card, Bool)] -> String
 renderHand xs =
   unlines (zipWith renderCard [1..] xs)
+
+renderChipsMultTable :: RoundGameState -> [PokerHand] -> String
+renderChipsMultTable st xs =
+  unlines (map (renderChipsMult st) xs)
+
+renderChipsMult :: RoundGameState -> PokerHand -> String
+renderChipsMult st ph = show ph ++ " - " ++ show ((pokerHandChipsMult st) ph)
 
 renderJoker :: Int -> Maybe Joker -> String
 renderJoker i Nothing =
@@ -82,6 +89,10 @@ printGameState st = do
   putStrLn (
     "Jogadas restantes: " ++ show (hands st)
     ++ "   Descartes: " ++ show (discards st))
+
+  putStrLn "------------------------------------"
+
+  putStrLn (renderChipsMultTable st allPokerHands)
 
   putStrLn "------------------------------------"
   putStrLn "Comandos:"
@@ -140,7 +151,7 @@ pickJokerOrIncreasePokerHand st = do
 
   putStrLn ("1: Joker " ++ show (head availableJokers))
   putStrLn ("2: Joker " ++ show (availableJokers !! 1))
-  putStrLn ("3: Melhoria de mão " ++ show availablePokerHand)
+  putStrLn ("3: Melhoria de mão " ++ show availablePokerHand ++ " - " ++ show (getUpgradedPokerHandChipsMult availablePokerHand ((currentPokerHandChipsMult st) availablePokerHand)))
 
   putStr "\nEscolha (1-3): "
   hFlush stdout
