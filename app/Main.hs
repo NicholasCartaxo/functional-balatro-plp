@@ -7,9 +7,9 @@ import GameLoop
     ( initialRoundGameState,
       playedPokerHandAndChipsMult,
       updateRoundGameState,
-      RoundGameState(hands, jokers, hand, discards, score, targetScore, deck, pokerHandChipsMult) )
+      RoundGameState(hands, jokers, hand, discards, score, targetScore, pokerHandChipsMult) )
 import Cards ( Card )
-import PokerHands ( PokerHand, ChipsMult, allPokerHands, getChipsMultOfHand, getInitialPokerHandChipsMult, getUpgradedPokerHandChipsMult )
+import PokerHands ( PokerHand, allPokerHands, getUpgradedPokerHandChipsMult )
 import Jokers ( Joker, allJokers, getDescription )
 import FullRoundLoop
     ( FullRoundState(currentRound, currentJokers, currentPokerHandChipsMult),
@@ -44,7 +44,7 @@ renderChipsMultTable st xs =
   unlines (map (renderChipsMult st) xs)
 
 renderChipsMult :: RoundGameState -> PokerHand -> String
-renderChipsMult st ph = show ph ++ " - " ++ show ((pokerHandChipsMult st) ph)
+renderChipsMult st ph = show ph ++ " - " ++ show (pokerHandChipsMult st ph)
 
 renderJoker :: Int -> Maybe Joker -> String
 renderJoker i Nothing =
@@ -151,7 +151,7 @@ pickJokerOrIncreasePokerHand st = do
 
   putStrLn ("1: Joker " ++ show (head availableJokers))
   putStrLn ("2: Joker " ++ show (availableJokers !! 1))
-  putStrLn ("3: Melhoria de mão " ++ show availablePokerHand ++ " - " ++ show (getUpgradedPokerHandChipsMult availablePokerHand ((currentPokerHandChipsMult st) availablePokerHand)))
+  putStrLn ("3: Melhoria de mão " ++ show availablePokerHand ++ " - " ++ show (getUpgradedPokerHandChipsMult availablePokerHand (currentPokerHandChipsMult st availablePokerHand)))
 
   putStr "\nEscolha (1-3): "
   hFlush stdout
