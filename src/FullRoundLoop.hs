@@ -37,7 +37,7 @@ initialFullRoundState = FullRoundState
 
 nextFullRoundState :: FullRoundState -> FullRoundState
 nextFullRoundState state = FullRoundState
-  { currentTargetScore = currentTargetScore state * 2
+  { currentTargetScore = floor (fromIntegral (currentTargetScore state) * (1.5 :: Double))
   , currentRound = currentRound state + 1
   , currentJokers = currentJokers state
   , currentPokerHandChipsMult = currentPokerHandChipsMult state
