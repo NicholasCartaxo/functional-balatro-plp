@@ -129,9 +129,9 @@ printGameState st = do
         ++ lines (renderHand (hand st))
         ++
         [ "------------------------------------"
-        , "Pontuação: " ++ show (score st) ++ " / " ++ show (targetScore st)
+        , "Fichas: " ++ show (score st) ++ " / " ++ show (targetScore st)
         , "Mão atual: " ++ show pokerHand
-        , "Mult: " ++ show chipsMult
+        , "FICHAS x MULTI: " ++ show chipsMult
         , " "
         , "Jogadas: " ++ show (hands st) ++ "    Descartes: " ++ show (discards st)
         , "------------------------------------"
@@ -153,9 +153,22 @@ printGameState st = do
         ]
         ++ lines (renderChipsMultTable st allPokerHands)
 
-  let fullLeftColumn = statusBlock ++ [""] ++ commandsBlock
+  let explanation = 
+        [ "========================"
+        , " OBJETIVO"
+        , "========================"
+        , "Jogue mãos de poker para pontuar fichas"
+        , "Descarte cartas para tentar formar mãos melhores"
+        , "Cada mão possui uma pontuação base"
+        , "Cada carta pontua fichas com base em seu valor"
+        , "Melhore suas mãos poker e ganhe coringas"
+        , "Para pontuar mais fichas"
+        ]
 
-  putStrLn (combineColumns 40 fullLeftColumn tableBlock)
+  let fullLeftColumn = statusBlock ++ [""] ++ commandsBlock
+  let fullRightColumn = tableBlock ++ [""] ++ explanation
+
+  putStrLn (combineColumns 40 fullLeftColumn fullRightColumn)
   putStrLn "--------------------------------------------------------------------"
 
   where

@@ -2,14 +2,6 @@ module Jokers
   ( Joker(..)
   , allJokers
   , getDescription
-  , multClubs
-  , multDiamonds
-  , pirate
-  , twoDucks
-  , flush
-  , sixtySeven
-  , fiftyOne
-  , theBite
   ) where
 import Cards
     ( Card(..), Rank(R3, R2, R6, R9, R5, RA, R8, R7), Suit(Diamond, Spade) )
@@ -25,7 +17,7 @@ instance Show Joker where
 
 allJokers :: [Joker]
 allJokers =
-  [ multClubs
+  [ multSpades
   , multDiamonds
   , pirate
   , seven
@@ -41,18 +33,18 @@ allJokers =
 
 getDescription :: Joker -> String
 getDescription joker
-  |joker == multClubs = "Cada carta de paus pontuada dá +5 MULT"
-  |joker == multDiamonds = "Cada carta de ouros pontuada dá +5 MULT"
-  |joker == pirate = "Se a mão pontuar exatamente dois 9 dá +27 MULT"
-  |joker == seven = "Para cada 7 pontuado dá +7 MULT"
-  |joker == twoDucks = "Se a mão pontuar pelo menos dois 2 dá x2 MULT"
-  |joker == flush = "Se a mão for um flush dá x2 MULT"
-  |joker == three = "Se a mão for uma trinca dá x3 MULT"
-  |joker == house = "Se a mão for um full house dá x4 MULT"
-  |joker == sixtySeven = "Se a mão pontuar um 6 e um 7 dá +67 CHIPS"
-  |joker == fiftyOne = "Se a mão pontuar um 5 e um Ás dá +51 CHIPS"
-  |joker == sport = "Se a mão pontuar um 8 e um 7 dá +87 CHIPS"
-  |joker == theBite = "Se a mão pontuar um 8 e um 3 dá +83 CHIPS, mas isso é só uma teoria"
+  |joker == multSpades = "Cada carta de espadas pontuada dá +5 MULTI"
+  |joker == multDiamonds = "Cada carta de ouros pontuada dá +5 MULTI"
+  |joker == pirate = "Se a mão pontuar exatamente dois 9 dá +27 MULTI"
+  |joker == seven = "Para cada 7 pontuado dá +7 MULTI"
+  |joker == twoDucks = "Se a mão pontuar pelo menos dois 2 dá x2 MULTI"
+  |joker == flush = "Se a mão for um flush dá x2 MULTI"
+  |joker == three = "Se a mão for uma trinca dá x3 MULTI"
+  |joker == house = "Se a mão for um full house dá x4 MULTI"
+  |joker == sixtySeven = "Se a mão pontuar um 6 e um 7 dá +67 FICHAS"
+  |joker == fiftyOne = "Se a mão pontuar um 5 e um Ás dá +51 FICHAS"
+  |joker == sport = "Se a mão pontuar um 8 e um 7 dá +87 FICHAS"
+  |joker == theBite = "Se a mão pontuar um 8 e um 3 dá +83 FICHAS, mas isso é só uma teoria"
   |otherwise = "Coringa inválido"
 
 numOfSuit :: Suit -> [Card] -> Integer
@@ -64,8 +56,8 @@ numOfRank rank xs = toInteger (length [r | (Card r _) <- xs, r == rank])
 hasRank :: Rank -> [Card] -> Bool
 hasRank rank = any (\(Card r _) -> r == rank)
 
-multClubs :: Joker
-multClubs = Joker "Duelo de espadas" func
+multSpades :: Joker
+multSpades = Joker "Duelo de espadas" func
   where
     func (ChipsMult c m) (_, hand) = ChipsMult c (m + 5*numOfSuit Spade hand)
 
