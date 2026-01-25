@@ -221,6 +221,11 @@ pickJokerOrIncreasePokerHand st = do
   putStrLn ("2: Joker " ++ show (availableJokers !! 1))
   putStrLn ("3: Melhoria de mão " ++ show availablePokerHand ++ " - " ++ show (getUpgradedPokerHandChipsMult availablePokerHand (currentPokerHandChipsMult st availablePokerHand)))
 
+  pickJokerOrIncreasePokerHandLoop st availableJokers availablePokerHand
+
+pickJokerOrIncreasePokerHandLoop :: FullRoundState -> [Joker] -> PokerHand -> IO FullRoundState
+pickJokerOrIncreasePokerHandLoop st availableJokers availablePokerHand = do
+
   putStr "\nEscolha (1-3): "
   hFlush stdout
   choice <- getCharAndClean
@@ -236,7 +241,9 @@ pickJokerOrIncreasePokerHand st = do
 
     resultFullRoundState
       |not (isCharBetween choice 1 3) = do
-        pickJokerOrIncreasePokerHand st
+        putStrLn "Entrada inválida! Digite um número de 1 à 3."
+        hFlush stdout
+        pickJokerOrIncreasePokerHandLoop st availableJokers availablePokerHand
       |choice == '3' = return (upgradedPokerHandFullRoundState availablePokerHand st)
       |fullJokersList (currentJokers st) = fullJokersFlow
       |otherwise = return (notFullJokerFullRoundState choice availableJokers st)
