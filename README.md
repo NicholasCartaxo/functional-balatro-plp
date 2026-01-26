@@ -4,10 +4,10 @@ Este projeto é uma implementação funcional do jogo Balatro, desenvolvida em H
 
 ## Pré-requisitos
 
-Para rodar este projeto, você precisa ter o Haskell Stack instalado.
+Para executar este projeto, você precisa ter o Haskell Stack instalado.
 - [Instalar Haskell Stack](https://docs.haskellstack.org/en/stable/)
 
-## Como Rodar
+## Como executar
 
 ### Windows
 
