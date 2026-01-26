@@ -50,9 +50,9 @@ O objetivo é vencer as "Blinds" (pontuações alvo) que aumentam a cada rodada.
   * Caso os slots estejam cheios, é possível substituir um coringa antigo por um novo adquirido.
 
 ## Progressão e Loja
-  Ao vencer uma rodada (atingir a pontuação necessária), o jogador tem a oportunidade de melhorar seu deck. Você poderá escolher entre:
-    1. Dois Coringas Aleatórios: Para adicionar novos efeitos.
-    2. Melhoria de Mão: Aumenta o nível (multiplicador e fichas base) de um tipo específico de mão de poker.
+Ao vencer uma rodada (atingir a pontuação necessária), o jogador tem a oportunidade de melhorar seu deck. Você poderá escolher entre:
+ 1. Dois Coringas Aleatórios: Para adicionar novos efeitos.
+ 2. Melhoria de Mão: Aumenta o nível (multiplicador e fichas base) de um tipo específico de mão de poker.
 
 ## Controles
 Tecla  Ação
