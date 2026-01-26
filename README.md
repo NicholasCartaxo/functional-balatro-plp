@@ -62,6 +62,15 @@ w  Descartar (Troca as cartas selecionadas por novas)
 e  Ordenar mão por Naipe
 r  Ordenar mão por Valor
 
+| Tecla   | Ação |
+| :--------------- | :------------: |
+| 1-8         |    Selecionar / Desselecionar cartas (pelo índice)       |
+| q           |      Jogar mão (Confirma as cartas selecionadas)         |
+| w           |     Descartar (Troca as cartas selecionadas por novas)   |
+| e           |     Ordenar mão por Naipe                                |
+| r           |    Ordenar mão por Valor                                 |
+
+
 ## Tabela de Pontuação
 Cada mão possui um valor base de Fichas x Multiplicador. Estes valores podem ser aumentados durante a campanha. Abaixo, a tabela de valores iniciais:
 
