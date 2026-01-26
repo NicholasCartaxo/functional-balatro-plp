@@ -65,13 +65,15 @@ r  Ordenar mão por Valor
 ## Tabela de Pontuação
 Cada mão possui um valor base de Fichas x Multiplicador. Estes valores podem ser aumentados durante a campanha. Abaixo, a tabela de valores iniciais:
 
-Mão de Poker  Pontuação Base
-Straight Flush  100 x 8
-Quadra (Four of a Kind)  60 x 7
-Full House  40 x 4
-Flush  35 x 4
-Sequência (Straight)  30 x 4
-Trinca (Three of a Kind)  30 x 3
-Dois Pares (Two Pair)  20 x 2
-Par (Pair)  10 x 2
-Carta Alta (High Card)  5 x 1
+| Mão de Poker     | Pontuação Base |
+| :--------------- | :------------: |
+| Straight Flush   |    100 x 8     |
+| Quadra           |     60 x 7     |
+| Full House       |     40 x 4     |
+| Flush            |     35 x 4     |
+| Sequência        |     30 x 4     |
+| Trinca           |     30 x 3     |
+| Dois Pares       |     20 x 2     |
+| Par              |     10 x 2     |
+| Carta Alta       |     5 x 1      |
+
