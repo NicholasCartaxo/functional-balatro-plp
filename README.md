@@ -55,12 +55,6 @@ Ao vencer uma rodada (atingir a pontuação necessária), o jogador tem a oportu
  2. Melhoria de Mão: Aumenta o nível (multiplicador e fichas base) de um tipo específico de mão de poker.
 
 ## Controles
-Tecla  Ação
-1-8  Selecionar / Desselecionar cartas (pelo índice)
-q  Jogar mão (Confirma as cartas selecionadas)
-w  Descartar (Troca as cartas selecionadas por novas)
-e  Ordenar mão por Naipe
-r  Ordenar mão por Valor
 
 | Tecla   | Ação |
 | :--------------- | :------------: |
