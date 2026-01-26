@@ -9,7 +9,7 @@ Para rodar este projeto, você precisa ter o Haskell Stack instalado.
 
 ## Como Rodar
 
-### Windows (Importante)
+### Windows
 
 Para garantir a visualização correta dos naipes e caracteres especiais no terminal do Windows, é **obrigatório** configurar a codificação para UTF-8 antes de executar o jogo.
 
